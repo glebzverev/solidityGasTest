@@ -2,13 +2,18 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./MyBook.sol";
+import "./Utils.sol";
 
-contract Book{
+contract Book is Utils{
 
-    struct Percent{
-        uint256 percent;
-        address addr;
+    address public bookAddr;
+    uint256 public index;
+    constructor(address _bookAddr, uint256 _index){
+        bookAddr = _bookAddr;
+        index = _index;
     }
+
 
     uint branchCount = 0;
 
@@ -16,7 +21,8 @@ contract Book{
 
     Percent[] public percents;
 
-    function setPercents(Percent[] calldata _percents) public {
+    function setPercents() public {
+        Percent[] memory _percents = MyBook(bookAddr).returnPercents(index);
         delete percents; 
         sumPercent = 0;
         for (uint256 i =0; i<_percents.length; i++){
@@ -30,6 +36,8 @@ contract Book{
 contract Valve is Book{
     uint256 public lastGasLeft = 0; 
     uint256 public width = 0;
+
+    constructor(address _bookAddr, uint256 _index) Book(_bookAddr, _index){}
 
     function Split(address _token) public {
         uint256 startGas = gasleft();

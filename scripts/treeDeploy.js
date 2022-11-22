@@ -63,12 +63,12 @@ async function main() {
   await valve10.setPercents([["100", valve20.address], ["100", valve21.address]])
 
 
-  const contracts = [valve0.address,valve10.address, valve11.address, valve20.address, valve21.address] 
+  const contracts = [valve0,valve10, valve11, valve20, valve21] 
   console.log("Before Split");
   for (var i in contracts){
-    await token.balanceOf(contracts[i]).then((res)=>{
-        console.log(`balanceOf ${contracts[i]} => ${res.toString()}`);
-      })    
+    await token.balanceOf(contracts[i].address).then((res)=>{
+        console.log(`balanceOf ${contracts[i].address} => ${res.toString()}`);
+      })      
   }
 
   await token.transfer(valve0.address, String(10**18))
@@ -76,9 +76,12 @@ async function main() {
   
   console.log("After Split");
   for (var i in contracts){
-    await token.balanceOf(contracts[i]).then((res)=>{
-        console.log(`balanceOf ${contracts[i]} => ${res.toString()}`);
-      })   
+    await token.balanceOf(contracts[i].address).then((res)=>{
+        console.log(`balanceOf ${contracts[i].address} => ${res.toString()}`);
+      })  
+      await contracts[i].lastGasLeft().then((res)=>{
+        console.log(`lastGasLeft ${contracts[i].address} => ${res.toString()}`);
+      }) 
   }
 
   await valve0.width().then(console.log);
