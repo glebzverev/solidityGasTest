@@ -2,6 +2,10 @@ const { config } = require("chai");
 const hre = require("hardhat");
 const { isConstructorDeclaration } = require("typescript");
 
+
+
+
+
 async function main(){
 
   const Token = await hre.ethers.getContractFactory("Token");
@@ -55,13 +59,16 @@ async function main(){
     console.log(
         `valve  deployed to ${valve.address}`
     );
-    valve.setPercents();
+    valve.setPercents()
   });
+  
   await token.transfer(valve.address, String(10**18));
-  await valve.Split(token.address)
+  await valve.Split(token.address, {gasLimit: 20000000})
   await token.balanceOf(another).then(console.log);
   await token.balanceOf(my_addr).then(console.log);
-
+  await valve.lastGasLeft().then((res)=>{
+    console.log(res.toString());
+  });
 }
 
 main().catch((error) => {

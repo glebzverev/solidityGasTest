@@ -4,3 +4,4 @@ github.pub
 artifacts
 cache
 package-lock.json
+env.json

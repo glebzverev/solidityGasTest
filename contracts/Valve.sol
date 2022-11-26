@@ -39,7 +39,7 @@ contract Valve is Book{
 
     constructor(address _bookAddr, uint256 _index) Book(_bookAddr, _index){}
 
-    function Split(address _token) public {
+    function Split(address _token) public returns(uint256){
         uint256 startGas = gasleft();
         if (branchCount > 0){            
             width = 0;
@@ -50,18 +50,24 @@ contract Valve is Book{
 
             uint256 remainderGas = gasleft() / 2 / branchCount;
 
+            uint256 _edge = 0;
             for (uint i = 0; i < branchCount; i++){
-                (bool success, ) = percents[i].addr.call{gas:remainderGas}(
+                (bool success, bytes memory data) = percents[i].addr.call{gas:remainderGas + _edge}(
                     abi.encodeWithSignature(
                         "Split(address)", 
                         _token
                     )
                 );
                 if (success){
+                    // _edge = remainderGas - abi.decode(data, (uint256)) - 10000;
                     width++;
+                }
+                else{
+                    _edge = 0;
                 }
             }
             lastGasLeft = startGas - gasleft();
+            return lastGasLeft;
         }    
     }
 } 
