@@ -1,7 +1,7 @@
-const env = require("../env");
 const { config } = require("chai");
 const hre = require("hardhat");
 const { isConstructorDeclaration } = require("typescript");
+var fs = require('fs');
 
 async function deploy_book(){
     const Book = await hre.ethers.getContractFactory("MyBook"); 
@@ -20,8 +20,7 @@ async function valveDeploy(book_address, index){
     await valve.deployed().then(() => {
       console.log(
           `valve  deployed to ${valve.address}`
-      );
-    //   valve.setPercents()
+      )
     });
     return valve;
 }
@@ -35,23 +34,26 @@ async function treeDeploy(book_address, amount){
     return valves;
 }
 
-// async function valveDeploy()
-
 async function main(){
-    // await valveDeploy(env["beneficiary"][0], 0)
-    const beneficicary = env["beneficiary"];
+    // const beneficicary = env["beneficiary"];
     const book = await deploy_book();
-    const valves = await treeDeploy(book.address, 6)
+    const valves = await treeDeploy(book.address, 7)
     console.log(valves[1].address);
+    data = {"nodes": []}
 
-    valves[1].setPercents();
-    await book.mint(valves[1].address, 0, 100, "0x").then((_, err) =>{
-        if (err) 
+    await valves.forEach(element => {
+      data["nodes"].push(element.address);
+    });
+    data["book"] = book.address;
+    
+    console.log(data)
+    var jsonData = JSON.stringify(data);
+    
+    await fs.writeFile("./scripts/valve.json", jsonData, function(err) {
+      if (err) {
           console.log(err);
-        else{
-          book.percents(0,0).then(console.log)
-        }
-      })
+      }
+    });
 }
 
 
